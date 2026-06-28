@@ -1,35 +1,43 @@
-# gm_8bit
-A module for manipulating voice data in Garry's Mod.
+# 🎙️ gm_8bit - Parametric Voice Effects
 
-# What does it do?
-gm_8bit is designed to be a starting point for any kind of voice stream manipulation you might want to do on a Garry's Mod server (or any source engine server, with a bit of adjustment).
+An advanced real-time voice manipulation binary module for **Garry's Mod**. 
+Originally a static voice filter, this fork introduces **Dynamic Parametric Audio Processing (EFF_CUSTOM)**, allowing developers to create infinite unique voices (Alien, Robot, Chipmunk, Radio, Demon) directly through Lua without recompiling!
 
-gm_8bit can decompress and recompress steam voice packets. It includes an SV_BroadcastVoiceData hook to allow server operators to incercept and manipulate this voice data. It makes several things possible, including:
-* Relaying server voice data to external locations
-* Performing voice recognition and producing transcripts
-* Recording voice data in compressed or uncompressed form
-* Applying transformation to user voice streams, for example pitch correction, noise suppression, or gain control.
+## ✨ New Features
+* 🎛️ **EFF_CUSTOM**: A fully modular audio effect that you can tweak in real-time.
+* 🎚️ **Pitch Shift (Granular)**: Make voices squeaky like a child or deep like a monster.
+* 📻 **Lowpass Filter**: Perfect for realistic Combine masks, walkie-talkies, and walls.
+* 🌌 **Reverb**: Add customizable echoes for caves, PA systems, and empty rooms.
 
-gm_8bit currently has reference implementations for relaying voice data and applying transformations to voice streams. See the `voice-relay` repository for an example implementation of a server that uses gm_8bit to relay server voice communications to a discord channel.
+## 🛠️ Lua API (How to use)
+You can now create your own voice effects instantly using the new Lua bindings!
 
-# Builds
-Both windows and linux builds are available with every commit. See the actions page.
+### Applying a Custom Voice
+```lua
+-- 1. Enable the custom effect channel for the player
+eightbit.EnableEffect( player:UserID(), eightbit.EFF_CUSTOM )
 
-# API
-`eightbit.EnableBroadcast(bool)` Sets whether the module should relay voice packets to `localhost:4000`.
+-- 2. Configure the parameters:
+-- eightbit.SetCustomEffect( userid, pitch, lowpass, reverb )
+-- • pitch: 1.0 (normal), >1.0 (squeaky/alien), <1.0 (deep)
+-- • lowpass: 0.0 (no filter), 0.5-0.9 (radio/mask effect)
+-- • reverb: 0.0 (no echo), 0.1-0.9 (room/cave echo)
 
-`eightbit.SetBroadcastIP(string)` Controls what IP the module should relay voice packets to, if broadcast is enabled.
+-- Example 1: Squeaky / Child voice
+eightbit.SetCustomEffect( player:UserID(), 1.5, 0.0, 0.0 )
 
-`eightbit.SetBroadcastPort(number)` Controls what port the module should relay voice packets to, if broadcast is enabled.
+-- Example 2: Combine Radio (Deep + Muffled)
+eightbit.SetCustomEffect( player:UserID(), 0.85, 0.7, 0.0 )
 
-`eightbit.EnableEffect(userid, number)` Sets whether to enable audio effect for a given userid. Takes an eightbit.EFF enum.
+-- Example 3: Alien Cave Monster
+eightbit.SetCustomEffect( player:UserID(), 0.6, 0.0, 0.6 )
+```
 
-`eightbit.SetDamp1(number)` Sets the dampening rate (should be from 0 to 1) for the EFF_MASKVOICE effect
+## ⬇️ Installation
+1. Go to the **Actions** tab in this repository.
+2. Click on the latest **C/C++ CI** build.
+3. Download the `gmsv_eightbit` artifact at the bottom of the page.
+4. Extract the `.dll` (or linux equivalent) to your server's `garrysmod/lua/bin/` folder.
 
-`eightbit.EFF_NONE` No audio effect.
-
-`eightbit.EFF_MASKVOICE` Enables a simple lowpass filter
-
-`eightbit.EFF_REVERB` Enables a simple reverb filter
-
-`eightbit.EFF_PROOT` Enables UwU
+---
+*No more C++ compiling! Create infinite roleplay voices dynamically.*
