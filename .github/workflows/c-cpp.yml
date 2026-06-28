@@ -16,6 +16,14 @@ jobs:
       run: |
         git clone --recursive https://github.com/danielga/garrysmod_common.git garrysmod_common
 
+    - name: Patch garrysmod_common
+      run: |
+        $content = Get-Content garrysmod_common/premake/generator.lua
+        $content = $content -replace "multiprocessorcompile", "-- multiprocessorcompile"
+        $content = $content -replace "linktimeoptimization", "-- linktimeoptimization"
+        $content = $content -replace "enablepch", "-- enablepch"
+        Set-Content garrysmod_common/premake/generator.lua -Value $content
+
     - name: Generate Project Files
       run: .\premake5.exe vs2022 --gmcommon=garrysmod_common
 
