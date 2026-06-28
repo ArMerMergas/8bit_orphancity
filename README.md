@@ -1,13 +1,13 @@
-# 🎙️ gm_8bit - Parametric Voice Effects
+# gm_8bit - Parametric Voice Effects
 
 An advanced real-time voice manipulation binary module for **Garry's Mod**. 
 Originally a static voice filter, this fork introduces **Dynamic Parametric Audio Processing (EFF_CUSTOM)**, allowing developers to create infinite unique voices (Alien, Robot, Chipmunk, Radio, Demon) directly through Lua without recompiling!
 
-## ✨ New Features
-* 🎛️ **EFF_CUSTOM**: A fully modular audio effect that you can tweak in real-time.
-* 🎚️ **Pitch Shift (Granular)**: Make voices squeaky like a child or deep like a monster.
-* 📻 **Lowpass Filter**: Perfect for realistic Combine masks, walkie-talkies, and walls.
-* 🌌 **Reverb**: Add customizable echoes for caves, PA systems, and empty rooms.
+## New Features
+*  **EFF_CUSTOM**: A fully modular audio effect that you can tweak in real-time.
+*  **Pitch Shift (Granular)**: Make voices squeaky like a child or deep like a monster.
+*  **Lowpass Filter**: Perfect for realistic Combine masks, walkie-talkies, and walls.
+*  **Reverb**: Add customizable echoes for caves, PA systems, and empty rooms.
 
 ## 🛠️ Lua API (How to use)
 You can now create your own voice effects instantly using the new Lua bindings!
@@ -33,11 +33,6 @@ eightbit.SetCustomEffect( player:UserID(), 0.85, 0.7, 0.0 )
 eightbit.SetCustomEffect( player:UserID(), 0.6, 0.0, 0.6 )
 ```
 
-## ⬇️ Installation
-1. Go to the **Actions** tab in this repository.
-2. Click on the latest **C/C++ CI** build.
-3. Download the `gmsv_eightbit` artifact at the bottom of the page.
-4. Extract the `.dll` (or linux equivalent) to your server's `garrysmod/lua/bin/` folder.
 
 ---
 *No more C++ compiling! Create infinite roleplay voices dynamically.*
