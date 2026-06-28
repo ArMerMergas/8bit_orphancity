@@ -6,7 +6,32 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            arch: x86
+            platform: Win32
+            outpath: projects/windows/vs2022/x86/Release/gmsv_eightbit_win32.dll
+            name: gmsv_eightbit_win32
+          - os: windows-latest
+            arch: x86_64
+            platform: x64
+            outpath: projects/windows/vs2022/x86_64/Release/gmsv_eightbit_win64.dll
+            name: gmsv_eightbit_win64
+          - os: ubuntu-22.04
+            arch: x86
+            platform: x86
+            outpath: projects/linux/gmake/x86/Release/gmsv_eightbit_linux.dll
+            name: gmsv_eightbit_linux
+          - os: ubuntu-22.04
+            arch: x86_64
+            platform: x86_64
+            outpath: projects/linux/gmake/x86_64/Release/gmsv_eightbit_linux64.dll
+            name: gmsv_eightbit_linux64
+    
+    runs-on: ${{ matrix.os }}
+    
     steps:
     - uses: actions/checkout@v4
       with:
@@ -16,7 +41,8 @@ jobs:
       run: |
         git clone --recursive https://github.com/danielga/garrysmod_common.git garrysmod_common
 
-    - name: Patch garrysmod_common
+    - name: Patch garrysmod_common (Windows)
+      if: matrix.os == 'windows-latest'
       run: |
         $content = Get-Content garrysmod_common/premake/generator.lua
         $content = $content -replace "multiprocessorcompile", "-- multiprocessorcompile"
@@ -24,17 +50,44 @@ jobs:
         $content = $content -replace "enablepch", "-- enablepch"
         Set-Content garrysmod_common/premake/generator.lua -Value $content
 
-    - name: Generate Project Files
+    - name: Patch garrysmod_common (Linux)
+      if: matrix.os == 'ubuntu-22.04'
+      run: |
+        sed -i 's/multiprocessorcompile/-- multiprocessorcompile/' garrysmod_common/premake/generator.lua
+        sed -i 's/linktimeoptimization/-- linktimeoptimization/' garrysmod_common/premake/generator.lua
+        sed -i 's/enablepch/-- enablepch/' garrysmod_common/premake/generator.lua
+
+    - name: Install Linux Dependencies
+      if: matrix.os == 'ubuntu-22.04'
+      run: |
+        sudo dpkg --add-architecture i386
+        sudo apt-get update
+        sudo apt-get install -y gcc-multilib g++-multilib
+
+    - name: Generate Project Files (Windows)
+      if: matrix.os == 'windows-latest'
       run: .\premake5.exe vs2022 --gmcommon=garrysmod_common
 
+    - name: Generate Project Files (Linux)
+      if: matrix.os == 'ubuntu-22.04'
+      run: |
+        chmod +x ./premake5
+        ./premake5 gmake --gmcommon=garrysmod_common
+
     - name: Add MSBuild to PATH
+      if: matrix.os == 'windows-latest'
       uses: microsoft/setup-msbuild@v1.3
 
-    - name: Build
-      run: msbuild projects/windows/vs2022/eightbit.sln /p:Configuration=Release /p:Platform=Win32
+    - name: Build Windows
+      if: matrix.os == 'windows-latest'
+      run: msbuild projects/windows/vs2022/eightbit.sln /p:Configuration=Release /p:Platform=${{ matrix.platform }}
+
+    - name: Build Linux
+      if: matrix.os == 'ubuntu-22.04'
+      run: make -C projects/linux/gmake config=release_${{ matrix.arch }}
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: gmsv_eightbit
-        path: projects/windows/vs2022/x86/Release/gmsv_eightbit_win32.dll
+        name: ${{ matrix.name }}
+        path: ${{ matrix.outpath }}
