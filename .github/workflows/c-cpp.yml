@@ -39,8 +39,13 @@ jobs:
         submodules: recursive
     
     - name: Clone garrysmod_common
+      shell: bash
       run: |
-        git clone --recursive https://github.com/danielga/garrysmod_common.git garrysmod_common
+        if [ "${{ matrix.arch }}" == "x86_64" ]; then
+          git clone --recursive https://github.com/danielga/garrysmod_common.git garrysmod_common --branch=x86-64-support-sourcesdk
+        else
+          git clone --recursive https://github.com/danielga/garrysmod_common.git garrysmod_common
+        fi
 
     - name: Patch garrysmod_common (Windows)
       if: matrix.os == 'windows-latest'
