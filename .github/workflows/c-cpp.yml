@@ -1,23 +1,38 @@
-name: C/C++ CI
+name: Build C/C++ CI
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    
+    - name: Clone garrysmod_common
+      run: |
+        git clone --recursive https://github.com/danielga/garrysmod_common.git ../garrysmod_common
+
+    - name: Download Latest Premake
+      run: |
+        Invoke-WebRequest -Uri "https://github.com/premake/premake-core/releases/download/v5.0.0-beta2/premake-5.0.0-beta2-windows.zip" -OutFile premake.zip
+        Expand-Archive premake.zip -DestinationPath .
+        Copy-Item premake5.exe -Destination premake5.exe -Force
+
+    - name: Generate Project Files
+      run: .\premake5.exe vs2022 --gmcommon=../garrysmod_common
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.3
+
+    - name: Build
+      run: msbuild projects/windows/vs2022/eightbit.sln /p:Configuration=Release /p:Platform=x86
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: gmsv_eightbit
+        path: projects/windows/vs2022/x86/Release/gmsv_eightbit_win32.dll
