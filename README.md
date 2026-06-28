@@ -9,7 +9,7 @@ Originally a static voice filter, this fork introduces **Dynamic Parametric Audi
 *  **Lowpass Filter**: Perfect for realistic Combine masks, walkie-talkies, and walls.
 *  **Reverb**: Add customizable echoes for caves, PA systems, and empty rooms.
 
-## 🛠️ Lua API (How to use)
+## Lua API (How to use)
 You can now create your own voice effects instantly using the new Lua bindings!
 
 ### Applying a Custom Voice
