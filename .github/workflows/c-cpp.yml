@@ -14,10 +14,10 @@ jobs:
     
     - name: Clone garrysmod_common
       run: |
-        git clone --recursive https://github.com/danielga/garrysmod_common.git ../garrysmod_common
+        git clone --recursive https://github.com/danielga/garrysmod_common.git garrysmod_common
 
     - name: Generate Project Files
-      run: .\premake5.exe vs2022 --gmcommon=../garrysmod_common
+      run: .\premake5.exe vs2022 --gmcommon=garrysmod_common
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.3
